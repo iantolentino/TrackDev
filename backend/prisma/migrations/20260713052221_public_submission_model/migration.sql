@@ -1,14 +1,14 @@
 -- DropForeignKey
-ALTER TABLE `activitylog` DROP FOREIGN KEY `ActivityLog_actorId_fkey`;
+ALTER TABLE `ActivityLog` DROP FOREIGN KEY `ActivityLog_actorId_fkey`;
 
 -- DropForeignKey
-ALTER TABLE `ticket` DROP FOREIGN KEY `Ticket_createdById_fkey`;
+ALTER TABLE `Ticket` DROP FOREIGN KEY `Ticket_createdById_fkey`;
 
 -- AlterTable
-ALTER TABLE `activitylog` MODIFY `actorId` VARCHAR(191) NULL;
+ALTER TABLE `ActivityLog` MODIFY `actorId` VARCHAR(191) NULL;
 
 -- AlterTable
-ALTER TABLE `ticket` ADD COLUMN `requesterEmail` VARCHAR(191) NULL,
+ALTER TABLE `Ticket` ADD COLUMN `requesterEmail` VARCHAR(191) NULL,
     ADD COLUMN `requesterName` VARCHAR(191) NULL,
     MODIFY `status` ENUM('PENDING', 'BACKLOG', 'TODO', 'IN_PROGRESS', 'AWAITING_INFO', 'COMPLETE', 'CANCELLED') NOT NULL DEFAULT 'TODO',
     MODIFY `createdById` VARCHAR(191) NULL;

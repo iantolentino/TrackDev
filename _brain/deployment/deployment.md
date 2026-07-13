@@ -72,7 +72,8 @@ triggered by hand after a local `npm run build` + `git push`.
    - `CLIENT_URL` = `https://dev.stratastaff.com`
    - `ADMIN_EMAIL` / `ADMIN_PASSWORD` / `ADMIN_NAME` = real values for the first admin account
    - `PORT` — leave unset, cPanel injects its own
-3. Deploy code via cPanel **Git Version Control** → clone the GitHub repo into the app root.
+3. Deploy code via cPanel **Git Version Control** → clone
+   `https://github.com/stratastaffglobal-webs/TrackDev.git` (branch `main`) into the app root.
 4. From cPanel's Node.js App "Run NPM Install" button (or SSH, inside the Node app's virtualenv
    shell — cPanel gives you an `source .../bin/activate` command for this):
    ```bash
