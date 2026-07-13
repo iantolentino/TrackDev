@@ -10,6 +10,7 @@ node_modules/
 # Build output
 dist/
 dist-ssr/
+*.zip
 
 # Uploads (user-submitted files, not source)
 backend/uploads/
