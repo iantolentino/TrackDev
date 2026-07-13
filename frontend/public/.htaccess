@@ -1,0 +1,12 @@
+# TrackDev SPA routing for cPanel/Apache.
+# React Router (BrowserRouter) needs every non-file, non-directory request to
+# fall through to index.html so client-side routing can take over — otherwise
+# a direct visit or refresh on /login, /register, or /request 404s.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>

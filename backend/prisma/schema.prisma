@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  DEVELOPER
+  ADMIN
+}
+
+enum Status {
+  PENDING
+  BACKLOG
+  TODO
+  IN_PROGRESS
+  AWAITING_INFO
+  COMPLETE
+  CANCELLED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model User {
+  id              String        @id @default(cuid())
+  email           String        @unique
+  password        String
+  name            String
+  role            Role          @default(USER)
+  createdTickets  Ticket[]      @relation("CreatedTickets")
+  assignedTickets Ticket[]      @relation("AssignedTickets")
+  comments        Comment[]
+  activityLogs    ActivityLog[]
+  blockedEmails   BlockedEmail[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model Ticket {
+  id             String       @id @default(cuid())
+  title          String
+  description    String       @db.Text
+  status         Status       @default(TODO)
+  priority       Priority     @default(MEDIUM)
+  category       String
+  dueDate        DateTime?
+  // Staff-created tickets (Quick Add) set createdBy; public submissions leave it
+  // null and use requesterName/requesterEmail instead — see decision log 2026-07-13.
+  createdBy      User?        @relation("CreatedTickets", fields: [createdById], references: [id])
+  createdById    String?
+  requesterName  String?
+  requesterEmail String?
+  assignedTo     User?        @relation("AssignedTickets", fields: [assignedToId], references: [id], onDelete: SetNull)
+  assignedToId   String?
+  comments       Comment[]
+  attachments    Attachment[]
+  activityLogs   ActivityLog[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([status])
+  @@index([createdById])
+  @@index([assignedToId])
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  content    String   @db.Text
+  isInternal Boolean  @default(false)
+  ticket     Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticketId   String
+  author     User     @relation(fields: [authorId], references: [id])
+  authorId   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([ticketId])
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  filename  String
+  path      String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticketId  String
+  createdAt DateTime @default(now())
+
+  @@index([ticketId])
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticketId  String
+  // Null actor = system-generated entry (e.g. a public submission, no staff involved yet).
+  actor     User?    @relation(fields: [actorId], references: [id])
+  actorId   String?
+  action    String
+  detail    String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([ticketId])
+}
+
+model BlockedEmail {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  reason      String?
+  blockedBy   User     @relation(fields: [blockedById], references: [id])
+  blockedById String
+  createdAt   DateTime @default(now())
+}
