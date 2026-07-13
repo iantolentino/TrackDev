@@ -12,15 +12,46 @@ EXECUTION_MODE
 MVP
 
 ## Last Completed Task
-T026 — Public request-status lookup page (/request is now email-lookup + list; form moved to /request/new)
+T028 — Git repo init + push to https://github.com/iantolentino/TrackDev.git (cPanel deploy prep)
 Completed: 2026-07-13
 
 ## Next Task
-T018 — Deploy to cPanel subdomain dev.stratastaff.com (runbook written, execution pending — user's team runs it)
+T018 — Deploy to cPanel subdomain dev.stratastaff.com (runbook written, execution pending — user's team runs it; repo is now on GitHub, ready to pull/clone)
 (T016/T017 — Phase 3 Scaling — still pending, lower priority)
 
 ## Active Blockers
 None
+
+## T028 — Git Repo Init + Push (2026-07-13)
+User provided github.com/iantolentino/TrackDev.git and asked to prepare the repo ahead of cPanel
+deploy. Project had never been under version control (no root .git). Two blockers found and
+resolved with explicit user confirmation before any deletion:
+- `_brain/.git` — a real nested repo with its own commit history (from the AI Nexus template
+  origin). User explicitly confirmed: fold it in as regular files, commit history discarded (its
+  file *contents* are preserved and now versioned as part of TrackDev's own history going forward).
+- `frontend/.git` — an empty nested repo (zero commits) left by the shadcn/vite scaffold's own
+  `git init`. User separately confirmed deletion of this one too (auto-mode's safety classifier
+  correctly required a second, distinct confirmation since the first answer only named `_brain`).
+Added root `.gitignore` (node_modules, .env, dist, backend/uploads, editor files) — verified via
+`git status --short` that only `.env.example` templates staged, no real `.env`/secrets. Committed
+231 files (full app + `_brain` history) to `main`, added `origin`, pushed successfully.
+Repo is now live at https://github.com/iantolentino/TrackDev.git, ready for T018 (cPanel pull/deploy).
+
+## T027 — Board Layout: Column-Only Scroll + Sort (2026-07-13)
+User: "update the columns only is the scrollable not the whole page... list can be sorted via time."
+- `BoardPage.tsx`: root changed from `min-h-svh` (page grows/scrolls) to `h-svh overflow-hidden`
+  (viewport-locked); Navbar and filter bar are now fixed, only the column row area is `flex-1
+  min-h-0 overflow-x-auto`.
+- `BoardColumn.tsx`: each column is now `h-full` with its header fixed (`shrink-0`) and its ticket
+  list as an independent `flex-1 min-h-0 overflow-y-auto` region — this is the actual "columns
+  scroll, not the page" behavior requested.
+- Added a Newest/Oldest sort `Select` next to the existing filters, sorting all columns by
+  `createdAt`.
+- Folded the old separate "Show cancelled" block into the main column row (toggled into
+  `columnStatuses` instead of a second DOM section below) — keeps the single-row-scrolls-together
+  layout consistent instead of having an orphaned section that would defeat the fixed-viewport goal.
+- Verified live via Playwright against real seeded dev data (12-ticket Todo column): screenshot
+  confirms navbar/filter bar pinned, columns independently scrollable, whole page static.
 
 ## T026 — Public Request-Status Lookup (2026-07-13)
 User asked "where can I see as client the list of approves?" — there was no answer, since the

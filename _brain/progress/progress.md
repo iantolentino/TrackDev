@@ -6,7 +6,9 @@
 ---
 
 ## Active Task
-> None — Phase 4 (Public Request Model pivot) complete, T019 (UI polish) and T026 (request-status lookup page) complete. T018 (cPanel deploy) still pending from Deployment & Launch; T016/T017 still pending from Phase 3 (Scaling)
+> None — Phase 4 pivot, T019 (UI polish), T026 (request-status lookup), T027 (board scroll fix),
+> and T028 (repo pushed to GitHub) all complete. T018 (actual cPanel deploy execution) is the
+> only Deployment & Launch item still pending; T016/T017 still pending from Phase 3 (Scaling)
 
 ---
 
@@ -47,6 +49,8 @@
 | T025 | Light/dark toggle + per-status color coding                             | 2026-07-13 |
 | T019 | UI polish pass — shadcn skill Critical Rules audit                       | 2026-07-13 |
 | T026 | Public request-status lookup page (/request email-search + /request/new form) | 2026-07-13 |
+| T027 | Board layout fix (fixed viewport, per-column scroll) + sort-by-time control    | 2026-07-13 |
+| T028 | Git repo init + push to github.com/iantolentino/TrackDev (cPanel deploy prep)   | 2026-07-13 |
 
 ---
 

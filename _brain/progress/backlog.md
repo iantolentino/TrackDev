@@ -65,6 +65,8 @@
 | T024 | Frontend: public Request Form (no login), Pending inbox column with Accept/Reject/Block controls, remove client self-cancel | HIGH | T021, T022, T023 | COMPLETE |
 | T025 | Light/dark mode toggle in Navbar + real per-status color coding (badges, columns) | MEDIUM | T009 | COMPLETE |
 | T026 | Public request-status lookup page: /request is now email-lookup + list, form moved to /request/new | MEDIUM | T021, T024 | COMPLETE |
+| T027 | Board layout: page fixed to viewport, each column scrolls independently; sort-by-time control | MEDIUM | T009, T014 | COMPLETE |
+| T028 | Git repo prepared and pushed to https://github.com/iantolentino/TrackDev.git for cPanel deploy prep | HIGH | T013 | COMPLETE |
 
 ---
 
