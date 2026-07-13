@@ -1,6 +1,6 @@
 import axios from "axios";
 import { API_ORIGIN } from "@/services/api";
-import type { PublicTicketSummary } from "@/types";
+import type { PublicBoardTicket, PublicTicketSummary } from "@/types";
 
 // Deliberately a plain axios instance, not the shared `api` — this call is
 // unauthenticated and must never carry a stale bearer token or trigger the
@@ -34,5 +34,10 @@ export async function getMyRequests(email: string): Promise<PublicTicketSummary[
   const { data } = await publicApi.get<PublicTicketSummary[]>("/public/tickets", {
     params: { email },
   });
+  return data;
+}
+
+export async function getPublicBoard(): Promise<PublicBoardTicket[]> {
+  const { data } = await publicApi.get<PublicBoardTicket[]>("/public/board");
   return data;
 }

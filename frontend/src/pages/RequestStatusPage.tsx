@@ -137,9 +137,14 @@ export function RequestStatusPage() {
               </ul>
             )}
 
-            <Button variant="outline" asChild>
-              <Link to="/request/new">Submit a new request</Link>
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" className="flex-1" asChild>
+                <Link to="/request/new">Submit a new request</Link>
+              </Button>
+              <Button variant="ghost" className="flex-1" asChild>
+                <Link to="/board">View public roadmap</Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </main>

@@ -37,6 +37,7 @@ export interface Ticket {
   requesterName: string | null;
   requesterEmail: string | null;
   assignedToId: string | null;
+  isPublic: boolean;
   createdBy: UserSummary | null;
   assignedTo: UserSummary | null;
   attachments: Attachment[];
@@ -77,6 +78,16 @@ export interface AuthUser {
 export interface PublicTicketSummary {
   id: string;
   title: string;
+  category: string;
+  status: Status;
+  dueDate: string | null;
+  createdAt: string;
+}
+
+export interface PublicBoardTicket {
+  id: string;
+  title: string;
+  description: string;
   category: string;
   status: Status;
   dueDate: string | null;

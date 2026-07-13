@@ -60,6 +60,10 @@ model Ticket {
   requesterEmail String?
   assignedTo     User?        @relation("AssignedTickets", fields: [assignedToId], references: [id], onDelete: SetNull)
   assignedToId   String?
+  // Whether this ticket appears on the public, unauthenticated roadmap view.
+  // Default true (public-by-default) — admin explicitly flips individual tickets
+  // to private, not the other way around. See decision log 2026-07-14.
+  isPublic       Boolean      @default(true)
   comments       Comment[]
   attachments    Attachment[]
   activityLogs   ActivityLog[]

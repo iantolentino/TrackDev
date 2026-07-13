@@ -65,3 +65,8 @@ export async function rejectTicket(id: string): Promise<Ticket> {
   const { data } = await api.patch<Ticket>(`/tickets/${id}/reject`);
   return data;
 }
+
+export async function setTicketVisibility(id: string, isPublic: boolean): Promise<Ticket> {
+  const { data } = await api.patch<Ticket>(`/tickets/${id}/visibility`, { isPublic });
+  return data;
+}

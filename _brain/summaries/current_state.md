@@ -12,17 +12,84 @@ EXECUTION_MODE
 MVP
 
 ## Last Completed Task
-T028 — Git repo init + push to https://github.com/iantolentino/TrackDev.git (cPanel deploy prep)
-Completed: 2026-07-13
+T029 — Public read-only roadmap (/board) + admin Public/Private per-ticket toggle
+Completed: 2026-07-14
 
 ## Next Task
-T018 — Deploy to cPanel subdomain dev.stratastaff.com (runbook written, execution pending — user's team runs it; repo is now on GitHub, ready to pull/clone)
+T018 is now LIVE, not just planned — dev.stratastaff.com is deployed and working (see session note
+below for the full runbook-execution trace, including the migration casing bug hit and fixed).
+Remaining: wire up outbound email (EMAIL_USER/EMAIL_PASS) — blocked on the Microsoft 365 tenant
+not allowing legacy app passwords; user deferred this, deploy proceeded without it.
 (T016/T017 — Phase 3 Scaling — still pending, lower priority)
 
 ## Active Blockers
-None
+- Outbound email not yet configured in production. Microsoft 365 tenant has no "App password" option
+  in Security Info (legacy basic auth disabled org-wide) — user deferred to a later session rather
+  than pursue Graph API/OAuth2 or a third-party provider (Resend/SendGrid) mid-deploy. App runs fully
+  without it (logs a warning, skips sending); admin reviews Pending requests directly on the board.
 
-## T028 — Git Repo Init + Push (2026-07-13)
+## T029 — Public Read-Only Roadmap + Visibility Toggle (2026-07-14)
+User, after seeing the live deployed site: "i want the users to see the list, like what admin sees
+but they cannot edit... admin [has] option to public it or private." Clarified via AskUserQuestion:
+anonymous public visitors (no client accounts reintroduced), full ticket detail (title, description,
+category, dates — no assignee/priority/requester info), per-ticket toggle defaulting to **Public**.
+- Schema: `Ticket.isPublic Boolean @default(true)`. Migration `20260713231559_add_ticket_public_visibility`
+  — hit the *same* case-sensitivity bug as T020 (Prisma generated `` `ticket` `` lowercase on Windows;
+  fixed to `` `Ticket` `` before committing, learned from the production incident below).
+- Backend: `GET /api/public/board` (public controller) — returns tickets where `isPublic: true` AND
+  `status NOT IN (PENDING, CANCELLED)` (unreviewed/rejected tickets aren't useful to show visitors).
+  `PATCH /api/tickets/:id/visibility` (staff-only) toggles it, logs an activity entry.
+- Frontend: new `PublicBoardPage.tsx` at `/board` — read-only Kanban-style columns (Backlog → Complete),
+  no drag/drop, no edit controls, using the restricted `PublicBoardTicket` type (no assignee/priority/
+  requester fields ever sent to this endpoint in the first place — enforced server-side via Prisma
+  `select`, not just hidden client-side). Added shadcn `Switch` component. `TicketCard.tsx` gained a
+  Public/Private switch in the card header (staff-only, all ticket states). Cross-linked from
+  `RequestStatusPage.tsx` ("View public roadmap").
+- Verified live end-to-end: curl-submitted a ticket, confirmed absent from `/api/public/board` while
+  PENDING, accepted it to TODO, confirmed it appeared with `isPublic` defaulting true, toggled false/
+  true via the real API and reconfirmed each time, then Playwright-screenshotted both `/board` (public,
+  no edit UI) and the staff board (showing the live toggle switch) against the real running app.
+  Test data cleaned up afterward.
+
+## T028 — Deployed to Production: dev.stratastaff.com (2026-07-13/14)
+Actually executed the cPanel runbook live with the user (not just planning it) — walked through
+every step interactively over many messages. Key incidents worth remembering:
+- **Two nested `.git` dirs blocked repo init** (`_brain/.git` had real history from the AI Nexus
+  template; `frontend/.git` was an empty scaffold artifact from shadcn/vite's own `git init`). Got
+  explicit per-directory user confirmation before deleting either (auto-mode's safety classifier
+  correctly required two separate confirmations, not one blanket answer).
+- User forked the repo to `stratastaffglobal-webs/TrackDev.git` for the org — that fork is now the
+  one cPanel actually deploys from. `iantolentino/TrackDev.git` (personal) is a step behind unless
+  manually synced; **always push fixes to the personal repo, then remind the user to click GitHub's
+  "Sync fork" button**, since this session has no push credentials for the org fork.
+- **cPanel Node.js App root gotcha**: creating the app first, then changing "Application root" to
+  point at a path with existing files, corrupts the passenger app registration ("Unable to find app
+  venv folder"). Fix is destroy + recreate with the correct root from the start — don't try to
+  rename an existing app's root after the fact.
+- **DATABASE_URL silently lost its password** when entered via cPanel's env-var UI (displayed as
+  `mysql://user:@localhost/db` with nothing between `:` and `@`). Cost one full `migrate deploy`
+  attempt (P1000 auth failure) before catching it. Always re-verify the full value after saving,
+  don't trust that what you typed is what got stored.
+- **Same table-name casing bug hit in production that was already fixed once in T020's migration**
+  (`ticket`/`activitylog` lowercase vs `Ticket`/`ActivityLog` in the actual schema) — Windows/local
+  MariaDB is case-insensitive on table names, Linux cPanel MySQL is case-sensitive by default. This
+  is now a known recurring risk: **any hand-inspected Prisma-generated migration should be checked
+  for this before it's trusted**, not just the one time it broke deploy. Fixed via `prisma migrate
+  resolve --rolled-back` (the failed migration errored on its very first statement, so nothing had
+  actually applied) then re-deploying after the SQL fix.
+- Two cPanel env-var name fields got corrupted to blank (`ADMIN_EMAIL`/`ADMIN_PASSWORD` saved as
+  `=value` with no name) after an earlier edit — cPanel UI bug, not something reproducible on our
+  end; fix was just delete-and-re-add the two rows cleanly.
+- Frontend deploy: `Compress-Archive` on Windows **does** include dotfiles like `.htaccess` (verified
+  by inspecting the zip's actual entries before telling the user to upload) — this was a real risk
+  worth checking rather than assuming, since a missing `.htaccess` would have silently broken every
+  route except `/` on first hard refresh.
+- Outbound email deliberately deferred — see Active Blockers above.
+- End state: **dev.stratastaff.com is live**, admin login confirmed working with real seeded
+  credentials (`ian@stratastaffglobal.com`), `/api/health` returns ok, database schema fully migrated,
+  frontend serving correctly with SPA routing intact.
+
+## T028 — Git Repo Init + Push (2026-07-13, precedes the deploy above)
 User provided github.com/iantolentino/TrackDev.git and asked to prepare the repo ahead of cPanel
 deploy. Project had never been under version control (no root .git). Two blockers found and
 resolved with explicit user confirmation before any deletion:

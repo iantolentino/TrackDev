@@ -67,6 +67,7 @@
 | T026 | Public request-status lookup page: /request is now email-lookup + list, form moved to /request/new | MEDIUM | T021, T024 | COMPLETE |
 | T027 | Board layout: page fixed to viewport, each column scrolls independently; sort-by-time control | MEDIUM | T009, T014 | COMPLETE |
 | T028 | Git repo prepared and pushed to https://github.com/iantolentino/TrackDev.git for cPanel deploy prep | HIGH | T013 | COMPLETE |
+| T029 | Public read-only roadmap (/board) + per-ticket admin Public/Private toggle (Ticket.isPublic, default true) | MEDIUM | T009, T021 | COMPLETE |
 
 ---
 

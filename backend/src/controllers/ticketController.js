@@ -289,6 +289,31 @@ export async function rejectTicket(req, res) {
   res.json(updated);
 }
 
+export async function setVisibility(req, res) {
+  const { isPublic } = req.body;
+  if (typeof isPublic !== 'boolean') {
+    return res.status(400).json({ error: 'isPublic must be true or false' });
+  }
+
+  const ticket = await prisma.ticket.findUnique({ where: { id: req.params.id } });
+  if (!ticket) {
+    return res.status(404).json({ error: 'Ticket not found' });
+  }
+
+  const updated = await prisma.ticket.update({
+    where: { id: req.params.id },
+    data: { isPublic },
+    include: TICKET_INCLUDE,
+  });
+  await logActivity({
+    ticketId: updated.id,
+    actorId: req.user.id,
+    action: 'UPDATED',
+    detail: isPublic ? 'Made public' : 'Made private',
+  });
+  res.json(updated);
+}
+
 export async function getTicketActivity(req, res) {
   const ticket = await prisma.ticket.findUnique({ where: { id: req.params.id } });
   if (!ticket || (ticket.status === 'BACKLOG' && !isStaff(req.user))) {

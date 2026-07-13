@@ -51,6 +51,7 @@
 | T026 | Public request-status lookup page (/request email-search + /request/new form) | 2026-07-13 |
 | T027 | Board layout fix (fixed viewport, per-column scroll) + sort-by-time control    | 2026-07-13 |
 | T028 | Git repo init + push to github.com/iantolentino/TrackDev (cPanel deploy prep)   | 2026-07-13 |
+| T029 | Public read-only roadmap (/board) + admin Public/Private per-ticket toggle       | 2026-07-14 |
 
 ---
 

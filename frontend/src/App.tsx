@@ -4,6 +4,7 @@ import { RegisterPage } from "@/pages/RegisterPage";
 import { BoardPage } from "@/pages/BoardPage";
 import { RequestFormPage } from "@/pages/RequestFormPage";
 import { RequestStatusPage } from "@/pages/RequestStatusPage";
+import { PublicBoardPage } from "@/pages/PublicBoardPage";
 import { ProtectedRoute } from "@/components/shared/ProtectedRoute";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -18,6 +19,7 @@ export function App() {
             /request/new is the actual submission form. */}
         <Route path="/request" element={<RequestStatusPage />} />
         <Route path="/request/new" element={<RequestFormPage />} />
+        <Route path="/board" element={<PublicBoardPage />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<BoardPage />} />
         </Route>

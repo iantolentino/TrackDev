@@ -16,6 +16,7 @@ import {
   assignTicket,
   changeTicketStatus,
   rejectTicket,
+  setTicketVisibility,
   updateTicketPriority,
 } from "@/services/ticketService";
 import {
@@ -27,6 +28,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -92,7 +94,19 @@ export function TicketCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-sm">{ticket.title}</CardTitle>
+        <div className="flex items-start justify-between gap-2">
+          <CardTitle className="text-sm">{ticket.title}</CardTitle>
+          {isStaff && (
+            <label className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
+              {ticket.isPublic ? "Public" : "Private"}
+              <Switch
+                checked={ticket.isPublic}
+                disabled={pending}
+                onCheckedChange={(checked) => run(() => setTicketVisibility(ticket.id, checked))}
+              />
+            </label>
+          )}
+        </div>
         <div className="flex flex-wrap gap-2">
           <Badge className={cn("border-transparent", STATUS_BADGE_CLASSES[ticket.status])}>
             {STATUS_LABELS[ticket.status]}

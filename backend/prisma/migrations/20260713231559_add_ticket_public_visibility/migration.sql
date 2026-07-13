@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Ticket` ADD COLUMN `isPublic` BOOLEAN NOT NULL DEFAULT true;

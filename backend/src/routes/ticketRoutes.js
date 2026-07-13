@@ -12,6 +12,7 @@ import {
   changeStatus,
   acceptTicket,
   rejectTicket,
+  setVisibility,
   deleteTicket,
 } from '../controllers/ticketController.js';
 
@@ -29,6 +30,7 @@ router.put('/:id', asyncHandler(updateTicket));
 router.patch('/:id/status', asyncHandler(changeStatus));
 router.patch('/:id/accept', asyncHandler(acceptTicket));
 router.patch('/:id/reject', asyncHandler(rejectTicket));
+router.patch('/:id/visibility', asyncHandler(setVisibility));
 router.delete('/:id', isAdmin, asyncHandler(deleteTicket));
 
 export default router;

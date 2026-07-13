@@ -84,3 +84,28 @@ export async function getPublicTicketsByEmail(req, res) {
 
   res.json(tickets);
 }
+
+// Public, unauthenticated read-only roadmap — full ticket detail except anything
+// internal-only (assignee, priority, requester name/email). PENDING (unreviewed)
+// and CANCELLED (rejected/withdrawn) are excluded — not useful info for visitors.
+// Admin controls per-ticket visibility via Ticket.isPublic (default true).
+export async function getPublicBoard(req, res) {
+  const tickets = await prisma.ticket.findMany({
+    where: {
+      isPublic: true,
+      status: { notIn: ['PENDING', 'CANCELLED'] },
+    },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      category: true,
+      status: true,
+      dueDate: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  res.json(tickets);
+}
